@@ -1,22 +1,58 @@
+import random
+from typing import List
+
+
 class Gibbet:
-    def __init__(self, errors=3):
+    _word: str
+    right_chars: List[str]
+    error_chars: List[str]
+    end_game: bool
+
+    def __init__(self, errors=5):
         self.errors = errors
+        self.right_chars = []
+        self.error_chars = []
+        self.end_game = False
 
     def generate_word(self):
-        pass
+        """Генерация слова, пока реализуем заглушку"""
+        with open('WordsStockRus.txt', 'r') as f:
+            word_list = []
+            for line in f.readlines():
+                word_list.append(line.strip())
+            self._word = random.choice(word_list)
 
-    def take_letter(self, letter):
-        pass
+    def take_letter(self, char):
+        """Ввести букву (попытка)"""
+        if self._check_letter_in_word(char):
+            print('Bingo!\n')
+            self.right_chars.append(char)
+            self.print_word()
+        else:
+            print('Извините, вы ошиблись')
+            self.errors -= 1
+            self.error_chars.append(char)
+            self.print_try_amount()
 
-    def __len__(self):
+    def print_try_amount(self):
         """Кол-во оставшихся попыток"""
-        pass
+        print(f"Осталось попыток: {self.errors} шт.")
 
-    def __str__(self):
+    def print_word(self):
         """Показать открытые буквы,
         если буква скрыта вместо неё ставим подчёркивание или дефис"""
-        pass
+        word: str = ''
+        for char in self._word:
+            if char in self.right_chars:
+                word += char
+            else:
+                word += '-'
+        print(word)
 
     def show_letters(self):
         """Показать буквы, которые клиент вводил"""
-        pass
+        return ', '.join(self.error_chars)
+
+    def _check_letter_in_word(self, char):
+        if self._word:
+            return char in self._word
