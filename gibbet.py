@@ -12,7 +12,8 @@ class Gibbet:
         self.errors = errors
         self.right_chars = []
         self.error_chars = []
-        self.end_game = False
+        self.run_game = True
+        self.win = None
 
     def generate_word(self):
         """Генерация слова, пока реализуем заглушку"""
@@ -21,6 +22,9 @@ class Gibbet:
             for line in f.readlines():
                 word_list.append(line.strip())
             self._word = random.choice(word_list)
+            self.errors = len(self._word) + 1
+        print('Компьютер сгенерировал слово')
+        self.print_try_amount()
 
     def take_letter(self, char):
         """Ввести букву (попытка)"""
@@ -51,8 +55,18 @@ class Gibbet:
 
     def show_letters(self):
         """Показать буквы, которые клиент вводил"""
-        return ', '.join(self.error_chars)
 
-    def _check_letter_in_word(self, char):
+        return ', '.join(self.error_chars)  # TODO: огранизовть проверку и вывод введеных букв
+
+    def _check_letter_in_word(self, char: str):
         if self._word:
-            return char in self._word
+            return char.lower() in self._word
+
+    def _check_game(self):
+        if self.errors <= 0:
+            self.run_game = False
+            print('Извините, вы проиграли')
+        elif len(self.right_chars) == len(self._word):
+            self.run_game = False
+            self.win = True
+            print('Поздравляем, вы выиграли')
